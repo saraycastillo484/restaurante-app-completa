@@ -1,0 +1,16 @@
+{
+  "name": "restaurante-backend-json",
+  "version": "1.0.0",
+  "description": "API restaurante/platos con persistencia en archivo JSON (sin MongoDB)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "nanoid": "^5.0.7",
+    "cors": "^2.8.5"
+  }
+}

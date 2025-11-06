@@ -1,0 +1,23 @@
+{
+  "restaurants": [
+    {
+      "_id": "F1Vmu1A4zevI",
+      "name": "Restaurante latino",
+      "createdAt": 1762456240575
+    },
+    {
+      "_id": "nIKuHnDIb2cF",
+      "name": "uhafujh",
+      "createdAt": 1762456387985
+    }
+  ],
+  "dishes": [
+    {
+      "_id": "TJJqgOk815n7",
+      "name": "ahcuias",
+      "price": 12,
+      "restaurant": "nIKuHnDIb2cF",
+      "createdAt": 1762456790984
+    }
+  ]
+}

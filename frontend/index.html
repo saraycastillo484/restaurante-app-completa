@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🍽️ Restaurante Manager</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --card:#1f2937;
+      --muted:#94a3b8;
+      --text:#e5e7eb;
+      --primary:#22d3ee;
+      --accent:#60a5fa;
+      --success:#34d399;
+      --danger:#f87171;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% -10%, #1e293b33, transparent 60%), radial-gradient(1000px 700px at 120% 10%, #0ea5e933, transparent 50%), var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    header{
+      position:sticky;top:0;z-index:10;
+      background:linear-gradient(180deg, rgba(15,23,42,.95), rgba(15,23,42,.6));
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid #33415555;
+    }
+    .container{ max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .row{ display:grid; grid-template-columns: 1fr; gap: 20px; }
+    @media(min-width: 900px){ .row { grid-template-columns: 380px 1fr; } }
+    .panel{
+      background:linear-gradient(180deg, #0b1220, #0b1220);
+      border:1px solid #33415588;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    h1{ margin:0; font-size: 28px; letter-spacing:.5px; }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:38px;height:38px;border-radius:12px;
+      background:linear-gradient(135deg, var(--primary), var(--accent));
+      box-shadow:0 8px 24px #22d3ee44, inset 0 0 18px #22d3ee77;
+    }
+    .muted{ color: var(--muted); font-size: 14px; }
+    label{ display:block; margin: 10px 0 6px; color: var(--muted); font-size: 13px; }
+    input[type="text"], input[type="number"], select{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid #33415588;
+      background:#0b1220; color:var(--text); outline:none;
+      transition:.2s border-color, .2s box-shadow;
+    }
+    input:focus, select:focus{ border-color: var(--primary); box-shadow: 0 0 0 3px #22d3ee22; }
+    .btn{
+      appearance:none; border:none; border-radius:12px; padding:12px 16px;
+      background:linear-gradient(180deg, #0ea5e9, #0284c7);
+      color:white; cursor:pointer; font-weight:600; letter-spacing:.2px;
+      box-shadow:0 10px 24px #0ea5e944; transition:.2s transform, .2s filter;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+    .btn.secondary{ background: linear-gradient(180deg, #22c55e, #16a34a); }
+    .btn.ghost{ background: transparent; border:1px solid #33415588; }
+    .section-title{ font-weight:700; letter-spacing:.3px; font-size:16px; margin:0 0 10px; }
+    .list{ display:grid; gap:12px; }
+    .item{
+      background: linear-gradient(180deg, #111827, #0f172a);
+      border:1px solid #33415588;
+      padding:14px; border-radius:14px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .pill{
+      padding:6px 10px; border-radius:999px; background:#0b1220; border:1px solid #33415588; color:var(--muted); font-size:12px;
+    }
+    .grid{
+      display:grid; gap:16px;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    @media(min-width:700px){ .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .card{
+      background: linear-gradient(180deg, #0b1220, #0b1220);
+      border:1px solid #33415588; border-radius:16px; padding:18px; box-shadow: var(--shadow);
+    }
+    .table{
+      width:100%; border-collapse: collapse; margin-top:6px;
+    }
+    .table th, .table td{
+      padding:10px 12px; border-bottom:1px solid #33415555; text-align:left; font-size:14px;
+    }
+    .table th{ color:#94a3b8; font-weight:600; }
+    .right{ text-align:right; }
+    .toolbar{ display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .pagination{ display:flex; gap:8px; align-items:center; }
+    .toast{
+      position:fixed; top:18px; right:18px; background:#0b1220; border:1px solid #22d3ee55; color:var(--text);
+      padding:12px 14px; border-radius:12px; box-shadow: var(--shadow); opacity:0; transform: translateY(-8px);
+      transition:.2s opacity,.2s transform;
+    }
+    .toast.show{ opacity:1; transform: translateY(0); }
+    footer{ margin-top:auto; color:#64748b; font-size:12px; text-align:center; padding:20px 0; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container brand">
+      <div class="logo"></div>
+      <div>
+        <h1>Restaurante Manager</h1>
+        <div class="muted"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container row">
+    <aside class="panel">
+      <h3 class="section-title">Crear restaurante</h3>
+      <label>Nombre</label>
+      <input id="rName" type="text" placeholder="Restaurante 1" />
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="btn" id="btnCreateR">Crear</button>
+        <button class="btn ghost" id="btnReload">Recargar lista</button>
+      </div>
+
+      <hr style="border:0;border-top:1px solid #33415555; margin:18px 0;" />
+
+      <h3 class="section-title">Añadir plato</h3>
+      <label>Restaurante</label>
+      <select id="rSelect"></select>
+
+      <label>Nombre del plato</label>
+      <input id="dishName" type="text" placeholder="Tacos al pastor" />
+      <label>Precio (€)</label>
+      <input id="dishPrice" type="number" step="0.01" placeholder="9" />
+
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="btn secondary" id="btnAddDish">Añadir plato</button>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div class="toolbar">
+        <div>
+          <div class="section-title">Platos por restaurante</div>
+          <div class="muted">Paginación: 3 por página (limit/skip)</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <label style="margin:0;">Restaurante</label>
+          <select id="listSelect"></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pagination" style="justify-content: space-between;">
+          <div class="muted">Página <span id="pageNum">1</span> de <span id="pageTotal">1</span> — <span id="totalItems">0</span> platos</div>
+          <div class="pagination">
+            <button class="btn ghost" id="prevBtn">◀ Anterior</button>
+            <button class="btn ghost" id="nextBtn">Siguiente ▶</button>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Plato</th>
+              <th class="right">Precio (€)</th>
+              <th>Restaurante</th>
+            </tr>
+          </thead>
+          <tbody id="dishTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Saray Castillo — <span class="mono">Trabajo</span>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const API = "http://localhost:3000";
+    const rName = document.getElementById("rName");
+    const btnCreateR = document.getElementById("btnCreateR");
+    const btnReload = document.getElementById("btnReload");
+    const rSelect = document.getElementById("rSelect");
+    const listSelect = document.getElementById("listSelect");
+    const dishName = document.getElementById("dishName");
+    const dishPrice = document.getElementById("dishPrice");
+    const btnAddDish = document.getElementById("btnAddDish");
+    const dishTable = document.getElementById("dishTable");
+    const pageNum = document.getElementById("pageNum");
+    const pageTotal = document.getElementById("pageTotal");
+    const totalItems = document.getElementById("totalItems");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const toast = document.getElementById("toast");
+
+    let state = { page: 1, totalPages: 1, total: 0, restaurantId: null };
+
+    function showToast(msg, ok=true){
+      toast.textContent = msg;
+      toast.style.borderColor = ok ? "#22d3ee55" : "#f8717144";
+      toast.classList.add("show");
+      setTimeout(()=>toast.classList.remove("show"), 1800);
+    }
+
+    async function api(path, options){
+      const res = await fetch(API + path, options);
+      if(!res.ok){
+        const err = await res.json().catch(()=>({message:"Error"}));
+        throw new Error(err.message || "Error HTTP");
+      }
+      return res.json();
+    }
+
+    async function loadRestaurants(){
+      const list = await api("/restaurants");
+      const opts = list.map(r=>`<option value="${r._id}">${r.name}</option>`).join("");
+      rSelect.innerHTML = opts || "<option>(Crea un restaurante)</option>";
+      listSelect.innerHTML = opts || "<option>(Crea un restaurante)</option>";
+      if(list.length){
+        if(!state.restaurantId) state.restaurantId = list[0]._id;
+        rSelect.value = state.restaurantId;
+        listSelect.value = state.restaurantId;
+      }else{
+        state.restaurantId = null;
+      }
+    }
+
+    async function loadDishes(){
+      if(!state.restaurantId){
+        dishTable.innerHTML="";
+        pageNum.textContent="1";
+        pageTotal.textContent="1";
+        totalItems.textContent="0";
+        return;
+      }
+      const data = await api(`/dishes?restaurant=${state.restaurantId}&page=${state.page}`);
+      pageNum.textContent = data.info.page;
+      pageTotal.textContent = data.info.totalPages;
+      totalItems.textContent = data.info.total;
+      state.totalPages = data.info.totalPages;
+      dishTable.innerHTML = data.data.map(d=>`
+        <tr>
+          <td>${d.name}</td>
+          <td class="right">${Number(d.price).toFixed(2)}</td>
+          <td><span class="pill">${d.restaurant.name}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    btnCreateR.addEventListener("click", async ()=>{
+      try{
+        const name = rName.value.trim();
+        if(!name) return showToast("Escribe un nombre de restaurante", false);
+        const r = await api("/restaurants", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ name })
+        });
+        showToast("Restaurante creado ✓");
+        rName.value = "";
+        await loadRestaurants();
+        state.restaurantId = r._id;
+        state.page = 1;
+        await loadDishes();
+      }catch(e){ showToast(e.message, false); }
+    });
+
+    btnReload.addEventListener("click", async ()=>{
+      await loadRestaurants();
+      await loadDishes();
+      showToast("Lista actualizada");
+    });
+
+    btnAddDish.addEventListener("click", async ()=>{
+      try{
+        const rid = rSelect.value;
+        const name = dishName.value.trim();
+        const price = Number(dishPrice.value);
+        if(!rid) return showToast("Selecciona un restaurante", false);
+        if(!name) return showToast("Nombre del plato requerido", false);
+        if(!(price >= 0)) return showToast("Precio inválido", false);
+
+        await api(`/restaurants/${rid}/dishes`, {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ name, price })
+        });
+        dishName.value = ""; dishPrice.value = "";
+        state.restaurantId = rid;
+        state.page = 1;
+        await loadDishes();
+        showToast("Plato añadido ✓");
+      }catch(e){ showToast(e.message, false); }
+    });
+
+    listSelect.addEventListener("change", async (e)=>{
+      state.restaurantId = e.target.value;
+      state.page = 1;
+      await loadDishes();
+    });
+
+    prevBtn.addEventListener("click", async ()=>{
+      if(state.page>1){ state.page--; await loadDishes(); }
+    });
+    nextBtn.addEventListener("click", async ()=>{
+      if(state.page<state.totalPages){ state.page++; await loadDishes(); }
+    });
+
+    // init
+    (async ()=>{
+      await loadRestaurants();
+      await loadDishes();
+    })();
+  });
+</script>
+
+</body>
+</html>
